@@ -1,22 +1,23 @@
 #!/usr/bin/env python
 
 class Enka ():
-  ''' Glavna klasa '''
+  ''' Klasa za epsilon NKA simulator '''
 
   def __init__ (self, stanja, pocetno, prihvatljiva, prijelazi):
     self.stanja         = stanja        # set([])
     self.pocetno        = pocetno
-    self.prihvatljiva   = prihvatljiva
+    self.prihvatljiva   = set (prihvatljiva)
     self.prijelazi      = prijelazi     # { (stanje, znak) : [stanje] }
 
+  def reset (self):
     self.trenutnaStanja = set ([]).union([self.pocetno])
-
+    self.epsilon_okruzenje()
 
   def epsilon_okruzenje (self):
     while True:
       ts = self.trenutnaStanja
       for stanje in self.trenutnaStanja:
-        novaStanja = self.prijelazi.get ((stanje, '$'))
+        novaStanja = self.prijelazi.get ((stanje, 'eps'))
         if novaStanja == None:
           continue
 
@@ -36,3 +37,9 @@ class Enka ():
       self.trenutnaStanja = self.trenutnaStanja.union (novaStanja)
 
     self.epsilon_okruzenje()
+
+  def isPrihvatljiv (self):
+    return bool (self.trenutnaStanja & self.prihvatljiva)
+
+  def ziv (self):
+    return bool (self.trenutnaStanja)
