@@ -1,18 +1,21 @@
-#!/usr/bin/env python
-
+#klasa za enka
 class Enka ():
   ''' Klasa za epsilon NKA simulator '''
 
-  def __init__ (self, stanja, pocetno, prihvatljiva, prijelazi):
+  def __init__ (self, stanja, pocetno, prihvatljiva, prijelazi, akcije, prioritet):
     self.stanja         = stanja        # set([])
     self.pocetno        = pocetno
     self.prihvatljiva   = set (prihvatljiva)
     self.prijelazi      = prijelazi     # { (stanje, znak) : [stanje] }
+    self.akcije = akcije
+    self.prioritet = prioritet
+
 
   def reset (self):
     self.trenutnaStanja = set ([]).union([self.pocetno])
     self.epsilon_okruzenje()
-
+    self.brojIteracija = 0
+    
   def epsilon_okruzenje (self):
     while True:
       ts = self.trenutnaStanja
@@ -29,7 +32,7 @@ class Enka ():
   def obavi_prijelaz (self, znak):
     for stanje in self.trenutnaStanja:
       self.trenutnaStanja = self.trenutnaStanja - set([stanje])
-      
+
       novaStanja = self.prijelazi.get ((stanje, znak))
       if novaStanja == None:
         continue
