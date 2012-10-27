@@ -36,7 +36,7 @@ class Re2enka ():
     print ('prijelazi Novi: ' + str(self.prijelazi) + '\n')
 
   def automat(self):
-    return [list(self.stanja), self.pocetno, [self.ciljno], self.prijelazi]
+    return [list(self.stanja), self.pocetno, self.ciljno, self.prijelazi]
   
   def novo_stanje (self):
     self.stanja.add(self.zadnje_stanje)
