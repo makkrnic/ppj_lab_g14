@@ -1,8 +1,7 @@
+#leksicki analizator
 from enka import Enka
 import sys
-#leksicki analizator
 
-#citanje automata i spremanje u objekte
 tablicaPrijelaza = open(r'C:\Users\Niko\Desktop\Faks\5. semestar\PPJ\lab1\tablicaPrijelaza.txt','r')
 retci = [redak[:-1] for redak in tablicaPrijelaza.readlines()]
 tablicaPrijelaza.close()
@@ -10,9 +9,12 @@ tablicaPrijelaza.close()
 i = 0
 automati = []
 prioritet = 0
+#citanje automata i spremanje u objekte
 while(1):
     stanja = retci[i].split(' ')   #sva interna stanja automata
     i += 1
+    if stanja == ['***Kraj_automata***']:
+        break
     pocStanje = retci[i]           #pocetno stanje automata
     i += 1
     prihStanje = retci[i]          #prihvatljivo stanje automata
@@ -22,13 +24,18 @@ while(1):
     while(1):
         prijelaz = retci[i].split(' ')
         i += 1
-        if prijelaz == '***Slijede akcije***':
+        if prijelaz == ['***Slijede_akcije***']:
             break
-        prijelazi[(prijelaz[0], prijelaz[1])] = prijelaz[2:]
+        #spremanje tablice prijelaza prijelazi:{(stanje,znak): [stanja]}
+        if prijelaz[1]=='' and prijelaz[2]== '': #znak je razmak
+            prijelazi[(prijelaz[0], ' ')] = prijelaz[3:]
+        else:
+            prijelazi[(prijelaz[0], prijelaz[1])] = prijelaz[2:]
     #citanje akcija za svaki automat
     akcije = []
     while(1):
-        if retci[i] == '***Kraj akcija***':
+        if retci[i] == '***Kraj_akcija***':
+            i += 1
             break
         akcije.append(retci[i])
         i += 1
@@ -36,44 +43,63 @@ while(1):
     prioritet += 1
 listaStanjaLA = retci[i].split(' ')   #stanja LA, prvo je pocetno
 
-#leksicki analiziramo program
+
 ulaz = open(r'C:\Users\Niko\Desktop\Faks\5. semestar\PPJ\lab1\minusKod.txt','r')
 program = ulaz.read()
 #program = sys.stdin.read()
 
-brRedak = 0
+posebniZnakovi = {'\n':'\\n', '\t':'\\t'}
+brRedak = 1
 rbrZnak = 0
 trenutnoStanje = listaStanjaLA[0]   #trenutno stanje postavljamo u pocetno
 tablicaIzlaza = []
-
+#leksicki analiziramo program
 while (rbrZnak < len(program)):
     ziviAutomati = []
+    trenutniAutomati = []
     niz = []
     for automat in automati:    #pokrecemo sve automate koje mozemo
-        if automat.pocetno == trenutnoStanje:
-            automat.reset()
+        automat.reset()
+        if automat.pocetno == trenutnoStanje:            
             trenutniAutomati.append(automat)
             ziviAutomati.append(automat)
+    #krecemo sa citanjem programa i radnjom automata
     while (1):
+        if rbrZnak == len(program):
+            break            
         trenutniZnak = program[rbrZnak]   #ucita znak programa
+        if trenutniZnak in posebniZnakovi.keys():   #\n:\\n i \t:\\t
+            trenutniZnak = posebniZnakovi[trenutniZnak]
         imaZivih = 0
-        for automat in ziviAutomati:      #obavljamo prijelaze za znak dok postoje zivi
+        
+        mrtviAutomati = []
+        for automat in ziviAutomati:      #obavljamo prijelaze za sve zive automate za ucitan znak
+            trs = automat.trenutnaStanja  
             automat.obavi_prijelaz(trenutniZnak)
-            if automat.ziv == True:
+            if automat.ziv() == True:
                 imaZivih = 1
                 automat.brojIteracija += 1
             else:
+                automat.trenutnaStanja = trs
+                mrtviAutomati.append(automat)
+
+        for automat in trenutniAutomati:      #brise mrtve automate iz liste zivih
+            if automat in mrtviAutomati:
                 del ziviAutomati[ziviAutomati.index(automat)]
-        if imaZivih == 1:
+                
+        if imaZivih == 1:                 #ako ima zivih, dodajemo znak u niz i citamo sljedeci
             niz.append(trenutniZnak)
             rbrZnak += 1
         else:
             break
-    #odredjujemo automat(e) koji su u prihvatljom stanju
+    
+    #odredjujemo automat(e) koji su u prihvatljivom stanju
+    prihvAutomati = []
     for automat in trenutniAutomati:
-        if automat.isPrihvatljiv:
+        if automat.isPrihvatljiv():
             prihvAutomati.append(automat)
             
+    najduzeZivjeli = []
     if len(prihvAutomati) != 0:
         #odredjujemo prihvatljive automat(e) koji su najduze zivjeli
         maksIteracija = max([automat.brojIteracija for automat in prihvAutomati])
@@ -90,18 +116,21 @@ while (rbrZnak < len(program)):
                     finalniAutomat = automat
         #obavimo akcije za finalni automat
         for akcija in finalniAutomat.akcije:
-            eval(akcija)
+            if akcija.split(' ')[0] == 'brRedak':
+                brRedak = eval(akcija)
+            else: 
+                eval(akcija)
     else:
         #postupak oporavka od pogreske
-        rbrZnak = rbrZnak - len(niz) + 2
-        sys.stderr.write('Greska u redu: ' + str(brRedak) + '\n' + 'Greska u znaku: ' + str(rbrZnak - 1) + '\n' + 'Znak: ' + program[rbrZnak - 1])
+        rbrZnak = rbrZnak - len(niz) + 1
+        sys.stderr.write('Greska u redu: ' + str(brRedak) + '\n' + 'Greska u znaku: ' + str(rbrZnak - 1) + '\n' + 'Znak: ' + program[rbrZnak - 1] + '\n')
 
 #ispis izlaza        
 izlaz = ''
 for lista in tablicaIzlaza:
     redak = ' '.join(lista) + '\n'
     izlaz = izlaz + redak
- 
- izlaznaDatoteka = open(r'C:\Users\Niko\Desktop\Faks\5. semestar\PPJ\lab1\izlaznaDatoteka.txt','w')
- izlaznaDatoteka.write(izlaz)
- #sys.stdout.write(izlaz)
+
+izlaznaDatoteka = open(r'C:\Users\Niko\Desktop\Faks\5. semestar\PPJ\lab1\izlaznaDatoteka.txt','w')
+izlaznaDatoteka.write(izlaz)
+#sys.stdout.write(izlaz)
