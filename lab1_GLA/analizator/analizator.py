@@ -90,9 +90,15 @@ class Re2enka ():
           self.dodaj_prijelaz (s1, ''.join(lijevo), s2)
           self.dodaj_prijelaz (s2, 'eps', cStanje)
           self.dodaj_prijelaz (cStanje, 'eps', s1)
+          s3 = self.novo_stanje()
+          self.dodaj_prijelaz (cStanje, ''.join(desno), s3)
 
           if len (lijevo) > 1:
             self.popravi_prijelaz ((s1, ''.join(lijevo)), s2)
+
+          if len (desno) > 1:
+            self.popravi_prijelaz ((cStanje, ''.join(desno)), s3)
+
           self.zadnjiOper = '*'
         elif reList[i+1] == '|':
           i += 2
@@ -102,7 +108,9 @@ class Re2enka ():
           self.dodaj_prijelaz (pStanje, ''.join(desno), cStanje)
           
           if len (lijevo) > 1:
-            self.popravi_prijelaz ((pStanje, ''.join(lijevo), cStanje))
+            self.popravi_prijelaz ((pStanje, ''.join(lijevo)), cStanje)
+          if len (desno) > 1:
+            self.popravi_prijelaz ((pStanje, ''.join(desno)), cStanje)
           self.zadnjiOper = '|'
         else:
           #nadovezivanje
@@ -114,6 +122,9 @@ class Re2enka ():
           
           if len (lijevo) > 1:
             self.popravi_prijelaz ((pStanje, ''.join(lijevo)), s1)
+
+          if len (desno) > 1:
+            self.popravi_prijelaz ((s1, ''.join(desno)), cStanje)
           self.zadnjiOper = ''
         
        # if len (lijevo) < 2:
@@ -122,9 +133,13 @@ class Re2enka ():
        #   self.ciljno = self.novo_stanje()
        #   self.re2enka2 (''.join(desno), staroCiljno, self.ciljno)
        #   #self.popravi_prijelaz ((s1, ''.join(desno), cStanje))
+        #self.dodaj_prijelaz (self.ciljno, 'eps', self.novo_stanje())
+        #self.dodaj_prijelaz (self.ciljno, ''.join(desno), self.novo_stanje())
+        #self.popravi_prijelaz ((self.ciljno, ''.join(desno)), self.zadnje_stanje)
 
-        novo_ciljno = self.novo_stanje()
-        self.re2enka2 (''.join(desno), self.ciljno, novo_ciljno)
+
+        #novo_ciljno = self.novo_stanje()
+        #self.re2enka2 (''.join(desno), self.ciljno, novo_ciljno)
         
   
         break
