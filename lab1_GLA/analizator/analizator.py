@@ -7,6 +7,7 @@ class Re2enka ():
     self.zadnje_stanje = 5
     self.prijelazi = {}
     self.zadnjiOper = None
+    self.stanja = set ([self.ciljno, self.zadnje_stanje, pStanje])
 
     self.pocetno = pStanje
     self.stanja = set([self.pocetno, self.ciljno])
@@ -33,6 +34,9 @@ class Re2enka ():
         break
     
     print ('prijelazi Novi: ' + str(self.prijelazi) + '\n')
+
+  def automat(self):
+    return [list(self.stanja), self.pocetno, [self.ciljno], self.prijelazi]
   
   def novo_stanje (self):
     self.stanja.add(self.zadnje_stanje)
@@ -51,14 +55,19 @@ class Re2enka ():
   
   def dodaj_prijelaz (self, stanje, znak, novo_stanje):
     if not znak:
-      znak = 'eps'
       return
+    
+    if hasattr(novo_stanje, "__iter__") and not isinstance(novo_stanje, str) and len(novo_stanje) ==1:
+      novo_stanje = novo_stanje[0]
+      
     
     #print ('Dodajem: ' + str((stanje, znak)) + ' => ' + str (novo_stanje))
 
     if (stanje, znak) not in list (self.prijelazi.keys()):
-      novo_stanje = [novo_stanje]
-      self.prijelazi[(stanje, znak)] = self.flatten(novo_stanje)
+      novo_stanje = self.flatten([novo_stanje])
+
+      ss = self.flatten ([stanje])
+      self.prijelazi[(ss[0], znak)] = novo_stanje
     else:
       self.prijelazi[(stanje, znak)].append (novo_stanje)
  
@@ -194,5 +203,5 @@ class Re2enka ():
   
 def re2enka (re, pocetno):
   r2e = Re2enka(re, pocetno)
-  return 
+  return r2e.automat()
   
