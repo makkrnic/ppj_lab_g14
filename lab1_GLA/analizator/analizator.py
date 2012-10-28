@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 class Re2enka ():
-  posebni = ['|', '(', ')', '*']
-  posebni2 = {'_': ' ', 'n': "\n", 't': "\t", '$': ''}
+  posebni = ['|', '(', ')', '*', '$']
+  posebni2 = {'_': ' ', 'n': "\n", 't': "\t"}
 
   def __init__ (self, re, pStanje):
     self.ciljno = 2
@@ -65,6 +65,9 @@ class Re2enka ():
   def dodaj_prijelaz (self, stanje, znak, novo_stanje):
     if not znak:
       return
+
+    if znak == '$':
+      znak = 'eps'
     
     if hasattr(novo_stanje, "__iter__") and not isinstance(novo_stanje, str) and len(novo_stanje) ==1:
       novo_stanje = novo_stanje[0]
@@ -78,7 +81,8 @@ class Re2enka ():
       ss = self.flatten ([stanje])
       self.prijelazi[(ss[0], znak)] = novo_stanje
     else:
-      self.prijelazi[(stanje, znak)].append (novo_stanje)
+      if novo_stanje not in self.prijelazi[(stanje,znak)]:
+        self.prijelazi[(stanje, znak)].append (novo_stanje)
  
   def popravi_prijelaz (self, prijelazIz, prijelazU):
     #print ('popravljam prijelaz: ' + str (prijelazIz) + ' => ' + str(prijelazU))
@@ -209,6 +213,24 @@ class Re2enka ():
       i += 1
   
 def re2enka (re, pocetno):
+  # prvo cemo postaviti zagrade prema prioritetima
+  i = 0;
+#  l = len (re)
+
+  re = '(' + re
+  while True:
+    if i >= len(re):
+      break
+
+    if re[i] == '|' and re[i-1] != '\\':
+      re = re[:i] + ')|(' + re[i+1:]
+      i+=1
+
+    i += 1
+
+  re = re + ')'
+  print ("transformirani regex: " + re)
+
   r2e = Re2enka(re, pocetno)
   return r2e.automat()
   
