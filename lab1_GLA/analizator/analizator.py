@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 class Re2enka ():
+  posebni = ['|', '(', ')', '*']
+  posebni2 = {'_': ' ', 'n': "\n", 't': "\t", '$': ''}
 
   def __init__ (self, re, pStanje):
     self.ciljno = 2
@@ -26,6 +28,13 @@ class Re2enka ():
           #print ('nije ok')
           self.popravi_prijelaz (p, self.prijelazi[p])
           break
+        elif len(z) == 2 and z[0] == '\\':
+          if z[1] in self.posebni:
+            self.prijelazi[(s,z[1])] = self.prijelazi[p]
+            del self.prijelazi[p]
+          elif z[1] in self.posebni2:
+            self.prijelazi[(s, self.posebni2[z[1]])] = self.prijelazi[p]
+            del self.prijelazi[p]
         #else:
         #  #debug
         #  print ('ok')
@@ -87,8 +96,6 @@ class Re2enka ():
   
   def re2enka2 (self, re, pStanje, cStanje):
     #print ('regex: ' + re + '\nPocetno: ' + str(pStanje) + '\nCiljno: ' + str (cStanje) + '\n')
-    posebni = ['|', '(', ')', '*']
-    posebni2 = {'_': ' ', 'n': "\n", 't': "\t", '$': ''}
   
   
   #  stanja = set ([1])
