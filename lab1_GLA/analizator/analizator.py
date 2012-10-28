@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 class Re2enka ():
-  posebni = ['|', '(', ')', '*', '$']
-  posebni2 = {'_': ' ', 'n': "\n", 't': "\t"}
+  #posebni = ['|', '(', ')', '*', '$']
+  posebni2 = {'_': ' ', 'n': "\n", 't': "\t", '|': '|', '(':'(', ')':')', '*':'*', '$': '$'}
 
   def __init__ (self, re, pStanje):
     self.ciljno = 2
@@ -15,24 +15,24 @@ class Re2enka ():
     self.stanja = set([self.pocetno, self.ciljno])
     self.re2enka2 (re, self.pocetno, self.ciljno)
     
-    #print ('prijelazi: ' + str(self.prijelazi) + '\n')
+    print ('prijelazi: ' + str(self.prijelazi) + '\n')
 
     
     while True:
       provjereno_prijelaza = 0
       for p in self.prijelazi:
         provjereno_prijelaza += 1
+        #print('Provjereno: ' + str (provjereno_prijelaza))
         (s, z) = p
         if z != 'eps' and len(z) > 1 and z[0] != '\\':
           #print ('prijelaz: ' + str (p) + ' => ' + str(self.prijelazi[p]) + ' nije ok')
           #print ('nije ok')
           self.popravi_prijelaz (p, self.prijelazi[p])
+          provjereno_prijelaza -= 1
           break
         elif len(z) == 2 and z[0] == '\\':
-          if z[1] in self.posebni:
-            self.prijelazi[(s,z[1])] = self.prijelazi[p]
-            del self.prijelazi[p]
-          elif z[1] in self.posebni2:
+          #print ('Ispravljam ' + str (z))
+          if z[1] in self.posebni2:
             self.prijelazi[(s, self.posebni2[z[1]])] = self.prijelazi[p]
             del self.prijelazi[p]
         #else:
