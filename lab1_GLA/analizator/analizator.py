@@ -2,7 +2,7 @@
 
 class Re2enka ():
   #posebni = ['|', '(', ')', '*', '$']
-  posebni2 = {'_': ' ', 'n': "\n", 't': "\t", '|': '|', '(':'(', ')':')', '*':'*', '$': '$'}
+  posebni2 = {'_': '\\_', 'n': "\\n", 't': "\\t", '|': '|', '(':'(', ')':')', '*':'*', '$': '$', '{': '{', '}': '}'}
 
   def __init__ (self, re, pStanje):
     self.ciljno = 2
@@ -20,7 +20,8 @@ class Re2enka ():
     
     while True:
       provjereno_prijelaza = 0
-      for p in self.prijelazi:
+      prijelazi2 = dict (self.prijelazi)
+      for p in prijelazi2:
         provjereno_prijelaza += 1
         #print('Provjereno: ' + str (provjereno_prijelaza))
         (s, z) = p
@@ -31,10 +32,10 @@ class Re2enka ():
           provjereno_prijelaza -= 1
           break
         elif len(z) == 2 and z[0] == '\\':
-          #print ('Ispravljam ' + str (z))
           if z[1] in self.posebni2:
-            self.prijelazi[(s, self.posebni2[z[1]])] = self.prijelazi[p]
+            print ('Ispravljam ' + str (z))
             del self.prijelazi[p]
+            self.prijelazi[(s, self.posebni2[z[1]])] = prijelazi2[p]
         #else:
         #  #debug
         #  print ('ok')
