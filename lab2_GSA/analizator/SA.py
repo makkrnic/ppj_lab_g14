@@ -46,6 +46,13 @@ class LRParser:
     
     #print self.novaStanja
     #self.akcije = akcije
+
+  def ucitaj_sinkro (self, path):
+    fin = open (path, 'r')
+    for line in fin:
+      if line.startswith ('%Syn'):
+        self.sinkro = line[5:].split (' ')
+        break
     
   def ucitaj_tablice (self, path):
     tablice_raw = open (path, 'r')
