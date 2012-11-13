@@ -226,6 +226,12 @@ def re2enka (re, pocetno):
     if re[i] == '|' and re[i-1] != '\\':
       re = re[:i] + ')|(' + re[i+1:]
       i+=1
+    # elif re[i] == '(' and re[i-1] != '\\' and re[i-1] != '(':
+    #   re = re[:i] + ')' + re[i:]
+    #   i+=1
+    # elif re[i] == ')' and re[i-1] != '\\' and re[i-1] != ')':
+    #   re = re[:i] + '(' + re[i:]
+    #   i+=1
 
     i += 1
 

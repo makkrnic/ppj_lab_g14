@@ -1,5 +1,5 @@
 % Akcije
-  ('0', '%', 'Reduciraj("<A> -> $")')
+('0', '%', 'Reduciraj("<A> -> $")')
 ('0', 'a', 'Pomakni(3)')
 ('0', 'b', 'Pomakni(4)')
 ('1', '%', 'Prihvati()')

@@ -39,7 +39,7 @@ class Enka ():
 
       self.trenutnaStanja = self.trenutnaStanja.union (novaStanja)
 
-    self.epsilon_okruzenje()
+      self.epsilon_okruzenje()
 
   def isPrihvatljiv (self):
     return bool (self.trenutnaStanja & self.prihvatljiva)

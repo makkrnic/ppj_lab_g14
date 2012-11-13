@@ -50,7 +50,15 @@ while (1):
     stanje = redak [1:redak.find('>')]
     regIzraz = redak[redak.find('>')+1:-1]
     for imeRegDefPom in listaReferenci: #rjesavanje referenci u pravilima
-        regIzraz = regIzraz.replace(imeRegDefPom, "(" + rjecnikRegIzraza[imeRegDefPom] + ")")
+        regIzraz = regIzraz.replace(imeRegDefPom, "{" + rjecnikRegIzraza[imeRegDefPom] + "}")
+        regIzraz = '(' + regIzraz
+        i = 0
+        while True:
+          if i >= len (regIzraz)
+            break
+
+          if regIzraz[i] == '{' and regIzraz[i-1] != '\\':
+            
     automatInfo = re2enka(regIzraz, stanje)  #automatInfo je tipa [[stanja],pocStanje, prihStanje,{(stanje,znak):[stanja]}]
     #zapisujemo automate u datoteku za LA
     tablicaPrijelaza.write(' '.join().automatInfo[0] + '\n')    #prvo stanja 

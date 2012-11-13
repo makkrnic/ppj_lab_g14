@@ -43,7 +43,8 @@ class LRParser:
     self.stog.push ('0')
 
     self.ucitaj_tablice (tablice_path)
-
+    
+    #print self.novaStanja
     #self.akcije = akcije
     
   def ucitaj_tablice (self, path):
@@ -53,10 +54,10 @@ class LRParser:
     
     tablica = ''
     for line in tablice_raw:
-      if line.find ('Akcije') and line[0] == '%':
+      if line.find ('Akcije') != -1 and line[0] == '%':
         tablica = 'akcije'
         continue
-      elif line.find ('NovoStanje') and line[0] == '%':
+      elif line.find ('NovoStanje') != -1 and line[0] == '%':
         tablica = 'novoStanje'
         continue
 
@@ -64,7 +65,7 @@ class LRParser:
       if tablica == 'akcije':
         self.akcije[(s, z)] = a
       elif tablica == 'novoStanje':
-        self.novoStanje[(s,z)] = a
+        self.novaStanja[(s,z)] = a
       else:
         print ('greska')
         sys.exit(-1)
@@ -85,11 +86,12 @@ class LRParser:
 
   def reduciraj (self, prijelaz):
     prijelaztmp = prijelaz.replace(' ', '').split('->')
+    trenutno_stanje = self.stog.vrh()
     lijevo = prijelaztmp[0]
     desno = prijelaztmp[1]
     djeca = []
     
-    if desno != '$':
+    if len(desno) > 0:
       for i in range (2* len(desno)):
         if i % 2 == 1:
           djeca.append(self.stog.pop())
@@ -101,25 +103,34 @@ class LRParser:
       
     cvor = Cvor (lijevo, djeca)
     self.stog.push (cvor)
+    novoStanje = self.novaStanja[(trenutno_stanje, cvor.nezavrsni)]
+    self.stog.push (novoStanje)
   
   def prihvati (self):
-    ''''''
+    print 'prihvacam'
 
   def odbaci (self):
-    ''''''
+    print 'ne prihvacam'
 
   def analiziraj (self):
     
     while True:
       if self.index_niza +1 > len(self.niz):
-        break
-      ulaz_char = self.niz[self.index_niza]
+        ulaz_char='%'
+      else:
+        ulaz_char = self.niz[self.index_niza]
       trenutno_stanje = self.stog.vrh()
 
-      akcija = self.akcije[(trenutno_stanje, ulaz_char)]
+      akcija = self.akcije.get((trenutno_stanje, ulaz_char), 'Odbaci')
+      print "znak:" + ulaz_char
+      print "trenutno stanje:" + str(trenutno_stanje)
+      print "akcija:" + str(akcija)
+      print "stog:" + str(self.stog.stog)
 
       if akcija.find ('Reduciraj') != -1:
-        self.reduciraj (akcija[10:-1])
+        prod = eval (akcija[10:-1])
+        #print prod
+        self.reduciraj (prod)
       elif akcija.find ('Pomakni') != -1:
         self.pomakni (ulaz_char, akcija[8:-1])
       elif akcija.find ('Prihvati') != -1:
@@ -127,5 +138,7 @@ class LRParser:
         break
       elif akcija.find ('Odbaci') != -1:
         self.odbaci()
+        break;
         
+      print "stog2:" + str(self.stog.stog) +'\n\n'
         # oporavak TODO
