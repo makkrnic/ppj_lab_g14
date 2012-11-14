@@ -34,6 +34,11 @@ class Cvor:
     self.nezavrsni = nezavrsni
     self.djeca = djeca
 
+class Produkcija:
+  def __init__ (self, lijevo, desno):
+    self.lijevo = lijevo
+    self.desno = desno
+
 class LRParser:
 
   def __init__ (self, niz, tablice_path):
@@ -92,25 +97,45 @@ class LRParser:
     self.index_niza += 1
 
   def reduciraj (self, prijelaz):
-    prijelaztmp = prijelaz.replace(' ', '').split('->')
-    trenutno_stanje = self.stog.vrh()
-    lijevo = prijelaztmp[0]
-    desno = prijelaztmp[1]
+    ## prijelaztmp = prijelaz.replace(' ', '').split('->')
+    ## trenutno_stanje = self.stog.vrh()
+    ## lijevo = prijelaztmp[0]
+    ## desno = prijelaztmp[1]
+    lijevo = prijelaz.lijevo
+    desno = prijelaz.desno
     djeca = []
+
     
+    print "stog5: " + str(self.stog.stog)
+    print "Desno: ", desno
     if len(desno) > 0:
-      for i in range (2* len(desno)):
-        if i % 2 == 1:
-          djeca.append(self.stog.pop())
+      for i in range (len(desno)):
+        a = self.stog.pop()
+        print "Izbacio " , a
+        znak = self.stog.pop()
+        print "Izbacio " , znak
+        if znak == False:
+          break
+        djeca.append(znak)
 
       djeca.reverse()
 
     else:  #epsilon
       djeca = ['$']
-      
+     
+    print "stog6: " + str(self.stog.stog)
+
     cvor = Cvor (lijevo, djeca)
+    print "Cvor: " + str(cvor.nezavrsni) + ' -> ' + str (cvor.djeca)
     self.stog.push (cvor)
-    novoStanje = self.novaStanja[(trenutno_stanje, cvor.nezavrsni)]
+    print "stog0: " + str(self.stog.stog)
+    #print 'djeca: ' + str(djeca) 
+    novoStanje_raw = self.novaStanja[(self.stog.dohvati (2), cvor.nezavrsni)]
+    if novoStanje_raw.find("Stavi") != -1:
+      novoStanje = novoStanje_raw[6:-1]
+    elif novoStanje_raw.find("Odbaci") != -1:
+      self.odbaci ()
+
     self.stog.push (novoStanje)
   
   def prihvati (self):
@@ -132,12 +157,14 @@ class LRParser:
       print "znak:" + ulaz_char
       print "trenutno stanje:" + str(trenutno_stanje)
       print "akcija:" + str(akcija)
-      print "stog:" + str(self.stog.stog)
+      print "stog:" + str(self.stog.stog), '\n'
 
       if akcija.find ('Reduciraj') != -1:
         prod = eval (akcija[10:-1])
-        #print prod
-        self.reduciraj (prod)
+        print "Produkcija: " , prod
+        prod = prod.split('->')
+        produkcija = Produkcija (prod[0].strip(), prod[1].strip().split(' '))
+        self.reduciraj (produkcija)
       elif akcija.find ('Pomakni') != -1:
         self.pomakni (ulaz_char, akcija[8:-1])
       elif akcija.find ('Prihvati') != -1:
@@ -147,5 +174,5 @@ class LRParser:
         self.odbaci()
         break;
         
-      print "stog2:" + str(self.stog.stog) +'\n\n'
+      #print "stog2:" + str(self.stog.stog) +'\n\n'
         # oporavak TODO
