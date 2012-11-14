@@ -41,7 +41,7 @@ class Produkcija:
 
 class LRParser:
 
-  def __init__ (self, niz, tablice_path):
+  def __init__ (self, niz, tablice_path, sinkro_path):
     self.niz = niz
     self.index_niza = 0
     self.stog = Stog()
@@ -51,6 +51,8 @@ class LRParser:
     
     #print self.novaStanja
     #self.akcije = akcije
+    
+    self.ucitaj_sinkro (sinkro_path)
 
   def ucitaj_sinkro (self, path):
     fin = open (path, 'r')
@@ -83,13 +85,15 @@ class LRParser:
         sys.exit(-1)
   
   def kraj_niza (self):
-    return len (self.niz) <= self.index_niza + 1
+    return len (self.niz) < self.index_niza + 1
 
   def procitaj (self):
-    if self.kraj_niza():
+    if self.kraj_niza() == True:
       return False
 
     char = self.niz[self.index_niza]
+    self.index_niza += 1
+    return char
   
   def pomakni (self, znak, stanje):
     self.stog.push (znak)
@@ -106,14 +110,14 @@ class LRParser:
     djeca = []
 
     
-    print "stog5: " + str(self.stog.stog)
-    print "Desno: ", desno
+    #print "stog5: " + str(self.stog.stog)
+    #print "Desno: ", desno
     if '$' not in desno:
       for i in range (len(desno)):
         a = self.stog.pop()
-        print "Izbacio " , a
+        #print "Izbacio " , a
         znak = self.stog.pop()
-        print "Izbacio " , znak
+        #print "Izbacio " , znak
         if znak == False:
           break
         djeca.append(znak)
@@ -123,12 +127,12 @@ class LRParser:
     else:  #epsilon
       djeca = ['$']
      
-    print "stog6: " + str(self.stog.stog)
+    #print "stog6: " + str(self.stog.stog)
 
     cvor = Cvor (lijevo, djeca)
-    print "Cvor: " + str(cvor.nezavrsni) + ' -> ' + str (cvor.djeca)
+    #print "Cvor: " + str(cvor.nezavrsni) + ' -> ' + str (cvor.djeca)
     self.stog.push (cvor)
-    print "stog0: " + str(self.stog.stog)
+    #print "stog0: " + str(self.stog.stog)
     #print 'djeca: ' + str(djeca) 
     novoStanje_raw = self.novaStanja[(self.stog.dohvati (2), cvor.nezavrsni)]
     if novoStanje_raw.find("Stavi") != -1:
@@ -169,10 +173,50 @@ class LRParser:
         self.pomakni (ulaz_char, akcija[8:-1])
       elif akcija.find ('Prihvati') != -1:
         self.prihvati()
-        break
+
+        break;
+
       elif akcija.find ('Odbaci') != -1:
         self.odbaci()
-        break;
+        self.ispisi_gresku(ulaz_char, trenutno_stanje)
+        oporavak_uspio = self.oporavi()
+        if not oporavak_uspio:
+          break
+        
         
       #print "stog2:" + str(self.stog.stog) +'\n\n'
         # oporavak TODO
+
+  def ispisi_gresku (self, znak, stanje):
+    print "Neocekivani znak: ", znak, '. Ocekuje se: '
+    okZnakovi = set()
+    for k in self.akcije:
+      #print self.akcije[k]
+      (s, z) = k
+      akcija = self.akcije.get (k, False)
+      if akcija != False and akcija[0] != 'O':
+        #print 'Dodajem ', z
+        okZnakovi.add(z)
+    
+    for z in okZnakovi:
+      sys.stdout.write (z + ' ') 
+
+    print ''
+
+  def oporavi(self):
+    while True:
+      if self.index_niza +1 > len(self.niz):
+        return False
+
+      z = self.niz[self.index_niza]
+      print "Znak: ", z
+      if z in self.sinkro:
+        break
+
+    while (not self.akcije.get ((self.stog.vrh(), z), False)) and not self.stog.prazan():
+      print "stog7: ", self.stog.stog
+      self.stog.pop()
+      self.stog.pop()
+    
+    raw_input()
+    return True
