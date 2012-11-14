@@ -108,7 +108,7 @@ class LRParser:
     
     print "stog5: " + str(self.stog.stog)
     print "Desno: ", desno
-    if len(desno) > 0:
+    if '$' not in desno:
       for i in range (len(desno)):
         a = self.stog.pop()
         print "Izbacio " , a
