@@ -7,7 +7,7 @@ from izradiLRtablicu import izradiLRtablicu
 
 #ucitavanje ulazne datoteke
 #ulaz = [redak[:-1] for redak in sys.stdin.readlines()]
-ulaznaDatoteka = open(r"ulaznaDatoteka148str.txt", 'r')
+ulaznaDatoteka = open(r"gramatikalink", 'r')
 ulaz = [redak[:-1] for redak in ulaznaDatoteka.readlines()]
 ulaznaDatoteka.close()
 
@@ -40,7 +40,7 @@ tablice = izradiLRtablicu(dka[0], dka[1], dka[2], zavrsniZnakovi, nezavrsniZnako
 
 Akcija = tablice[0]
 NovoStanje = tablice[1]
-tabliceLRparsera = open(r'analizator\tabliceLRparsera.txt', 'w')
+tabliceLRparsera = open(r'analizator/tabliceLRparsera.txt', 'w')
 tabliceLRparsera.write('% Akcije\n')
 for stanjeZnak in sorted(Akcija.keys()):
     tabliceLRparsera.write('("' + str(stanjeZnak[0]) + '", "' + stanjeZnak[1] + '", "' + \

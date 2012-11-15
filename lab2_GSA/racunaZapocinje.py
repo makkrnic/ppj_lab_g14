@@ -85,9 +85,11 @@ def zapocinjeZaSufikse(produkcije, zapocinjeSkupovi):
     zapocinje = {}
     #radimo zapocinje skupove za sve sufikse desnih strana produkcija
     for lijevaStrana in produkcije.keys():
-        for desnaStrana in produkcije[lijevaStrana]: 
+        for desnaStrana in produkcije[lijevaStrana]:
+            indeks = -1
             for znak in desnaStrana:
-                sufiks = desnaStrana[desnaStrana.index(znak):]
+                indeks = indeks + 1
+                sufiks = desnaStrana[indeks:]
                 if zapocinje.get(''.join(sufiks)) == None:
                     zapocinje[''.join(sufiks)] = zapocinjeZaProdukciju(sufiks, zapocinjeSkupovi, listaPraznih)
     return zapocinje
