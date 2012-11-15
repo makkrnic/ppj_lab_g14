@@ -1,5 +1,4 @@
 import sys
-import pprint
 
 class Stog:
   
@@ -86,10 +85,11 @@ class LRParser:
 
   def ucitaj_sinkro (self, path):
     fin = open (path, 'r')
-    for line in fin:
-      if line.startswith ('%Syn'):
-        self.sinkro = line[5:].rstrip('\n').split (' ')
-        break
+    self.sinkro = eval (fin.read())
+    #for line in fin:
+    #  if line.startswith ('%Syn'):
+    #    self.sinkro = line[5:].rstrip('\n').split (' ')
+    #    break
     
   def ucitaj_tablice (self, path):
     tablice_raw = open (path, 'r')
@@ -163,7 +163,7 @@ class LRParser:
     #print "Cvor: " + str(cvor.nezavrsni) + ' -> ' + str (cvor.djeca)
     self.stog.push (cvor)
     #print "stog0: " + str(self.stog.stog)
-    print 'djeca: ' + str(djeca) 
+    #print 'djeca: ' + str(djeca) 
     novoStanje_raw = self.novaStanja[(self.stog.dohvati (2), cvor.nezavrsni)]
     if novoStanje_raw.find("Stavi") != -1:
       novoStanje = novoStanje_raw[7:-2]
@@ -181,11 +181,11 @@ class LRParser:
     print 'ne prihvacam'
 
   def analiziraj (self):
-    for el in self.niz:
+    #for el in self.niz:
       #pprint.pprint (el)
-      print vars(el)
+      #print vars(el)
 
-    raw_input ()
+    #raw_input ()
     while True:
       if self.index_niza +1 > len(self.niz):
         ulaz = LeksickaJedinka ('%', 0, '%')
@@ -200,14 +200,14 @@ class LRParser:
       trenutno_stanje = self.stog.vrh()
 
       akcija = self.akcije.get((trenutno_stanje, ulaz_char), 'Odbaci')
-      print "znak:" + ulaz_char
-      print "trenutno stanje:" + str(trenutno_stanje)
-      print "akcija:" + str(akcija)
-      print "stog:" + str(self.stog.stog), '\n'
+      #print "znak:" + ulaz_char
+      #print "trenutno stanje:" + str(trenutno_stanje)
+      #print "akcija:" + str(akcija)
+      #print "stog:" + str(self.stog.stog), '\n'
 
       if akcija.find ('Reduciraj') != -1:
         prod = eval (akcija[10:-1])
-        print "Produkcija: " , prod
+        #print "Produkcija: " , prod
         prod = prod.split('->')
         produkcija = Produkcija (prod[0].strip(), prod[1].strip().split(' '))
         self.reduciraj (produkcija)
@@ -263,36 +263,11 @@ class LRParser:
         self.ispis_stabla (dijete, razina + 1)
     
 
-
-
-#  def oporavi(self):
-#    print 'l1'
-#    while True:
-#      if self.index_niza +1 > len(self.niz):
-#        return False
-#
-#      z = self.niz[self.index_niza].unznak
-#      print "Znak: ", z
-#      if z in self.sinkro:
-#        break
-#      raw_input()
-#    
-#    print 'l2'
-#    while (not self.akcije.get ((self.stog.vrh(), z), False)) and not self.stog.prazan():
-#      print "stog7: ", self.stog.stog
-#      self.stog.pop()
-#      raw_input()
-#      self.stog.pop()
-#    
-#    print 'end'
-#    raw_input()
-#    return True
-  
   def oporavi (self):
     znak = self.procitaj()
-    print self.sinkro
+    #print self.sinkro
     while znak != False:
-      print vars(znak)
+      #print vars(znak)
       if znak.unznak in self.sinkro:
         break
       znak = self.procitaj()
@@ -311,5 +286,5 @@ class LRParser:
 
 if __name__ == '__main__':
   ulazni_kod = open('../ulazlink').read()
-  parser = LRParser (ulazni_kod, 'tabliceLRparsera.txt', '../gramatikalink')
+  parser = LRParser (ulazni_kod, 'tabliceLRparsera.txt', 'sinkronizacijskiZnakovi')
   parser.analiziraj()
