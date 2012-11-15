@@ -50,3 +50,7 @@ for stanjeZnak in sorted(NovoStanje.keys()):
     tabliceLRparsera.write('("' + str(stanjeZnak[0]) + '", "' + stanjeZnak[1] + '", "' + \
     NovoStanje[stanjeZnak][0:NovoStanje[stanjeZnak].index('(')+1] + "'" + NovoStanje[stanjeZnak][NovoStanje[stanjeZnak].index('(')+1:-1] + "')\")" + '\n')
 tabliceLRparsera.close()
+
+sinkroFile = open (r'analizator/sinkronizacijskiZnakovi', 'w')
+sinkroFile.write (str(sinkronizacijskiZnakovi))
+sinkroFile.close()
