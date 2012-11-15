@@ -10,7 +10,6 @@ from izradiLRtablicu import izradiLRtablicu
 ulaznaDatoteka = open(r"ulaznaDatoteka148str.txt", 'r')
 ulaz = [redak[:-1] for redak in ulaznaDatoteka.readlines()]
 ulaznaDatoteka.close()
-print 'test'
 
 #ucitavanje podataka u varijable
 nezavrsniZnakovi = ulaz[0][3:].split(' ')
@@ -44,8 +43,10 @@ NovoStanje = tablice[1]
 tabliceLRparsera = open(r'analizator\tabliceLRparsera.txt', 'w')
 tabliceLRparsera.write('% Akcije\n')
 for stanjeZnak in sorted(Akcija.keys()):
-    tabliceLRparsera.write(str(stanjeZnak[0]) + ' ' + stanjeZnak[1] + ' ' + Akcija[stanjeZnak] + '\n')
+    tabliceLRparsera.write('("' + str(stanjeZnak[0]) + '", "' + stanjeZnak[1] + '", "' + \
+    Akcija[stanjeZnak][0:Akcija[stanjeZnak].index('(')+1] + "'" + Akcija[stanjeZnak][Akcija[stanjeZnak].index('(')+1:-1] + "')\")" + '\n')
 tabliceLRparsera.write('% NovoStanje\n')
 for stanjeZnak in sorted(NovoStanje.keys()):
-    tabliceLRparsera.write(str(stanjeZnak[0]) + ' ' + stanjeZnak[1] + ' ' + NovoStanje[stanjeZnak] + '\n')
+    tabliceLRparsera.write('("' + str(stanjeZnak[0]) + '", "' + stanjeZnak[1] + '", "' + \
+    NovoStanje[stanjeZnak][0:NovoStanje[stanjeZnak].index('(')+1] + "'" + NovoStanje[stanjeZnak][NovoStanje[stanjeZnak].index('(')+1:-1] + "')\")" + '\n')
 tabliceLRparsera.close()
