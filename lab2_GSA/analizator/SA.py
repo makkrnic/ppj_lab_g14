@@ -46,6 +46,9 @@ class LeksickaJedinka:
     self.linija = linija
     self.lexjed = leksicka_jedinka
 
+  def __str__ (self):
+    return self.unznak + ' ' + self.linija + ' ' + self.lexjed
+
 
 class LRParser:
 
@@ -122,8 +125,8 @@ class LRParser:
     self.index_niza += 1
     return char
   
-  def pomakni (self, znak, stanje):
-    self.stog.push (znak)
+  def pomakni (self, ljedinka, stanje):
+    self.stog.push (ljedinka)
     self.stog.push (stanje)
     self.index_niza += 1
 
@@ -209,7 +212,7 @@ class LRParser:
         produkcija = Produkcija (prod[0].strip(), prod[1].strip().split(' '))
         self.reduciraj (produkcija)
       elif akcija.find ('Pomakni') != -1:
-        self.pomakni (ulaz_char, akcija[9:-2])
+        self.pomakni (ulaz, akcija[9:-2])
       elif akcija.find ('Prihvati') != -1:
         self.prihvati()
 
@@ -247,15 +250,17 @@ class LRParser:
     print ''
 
   def ispis_stabla(self, cvor, razina):
-    if not isinstance (cvor, Cvor):
-      return
     output = sys.stdout
-    roditelj = cvor.nezavrsni
-    djeca = cvor.djeca
-    for dijete in djeca:
-      output.write (' ' * razina + str(dijete))
+    if isinstance (cvor, LeksickaJedinka):
+      output.write (' ' * razina + str(cvor) + '\n')
+      return
+    elif isinstance (cvor, Cvor):
+      roditelj = cvor.nezavrsni
+      djeca = cvor.djeca
+      for dijete in djeca:
+        output.write (' ' * razina + str(roditelj) + '\n')
 
-      self.ispis_stabla (dijete, razina + 1)
+        self.ispis_stabla (dijete, razina + 1)
     
 
 
