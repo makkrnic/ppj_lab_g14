@@ -177,11 +177,15 @@ class LRParser:
     #print 'Stog: ', self.stog.stog
     self.stog.pop()
     self.ispis_stabla (self.stog.pop(), 0)
+    if self.niz_odbijen == True:
+      self.odbaci()
+      return
     print 'prihvacam'
 
   def odbaci (self):
     #self.stog.pop()
     #self.ispis_stabla(self.stog.pop(), 0)
+    self.niz_odbijen = True
     print 'ne prihvacam'
 
   def analiziraj (self):
