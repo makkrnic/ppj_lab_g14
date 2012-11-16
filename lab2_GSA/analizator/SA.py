@@ -74,7 +74,7 @@ class LRParser:
       #print "Dodajem: ", jed
       unznak = jed[0]
       linija = jed[1]
-      lexjed = ''.join (jed[2:])
+      lexjed = ' '.join (jed[2:])
 
       # print unznak,linija,lexjed
       # raw_input()
