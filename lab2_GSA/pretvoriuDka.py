@@ -1,113 +1,51 @@
 #pretvanjanje enka u dka
 #izbaciti djelove za prihvatljiva stanja
 
-def pretvoriuDka(enka):
-    #pretvarnje enka u nka
-    nkaStanja = enka.stanja
-    nkaUlazniZnakovi = enka.ulazniZnakovi
-    nkaUlazniZnakovi.remove('$')
-    enka.epsilon_okruzenje()
-    nkaPocetno = enka.trenutnaStanja
-    #odredjivanje prihvatljivih
-    enka.trenutnaStanja = set([enka.pocetno])
-    nkaPrihvatljiva = enka.prihvatljiva
-    enka.epsilon_okruzenje()
-    for stanje in enka.trenutnaStanja:
-        if stanje in enka.prihvatljiva:
-            nkaPrihvatljiva = nkaPrihvatljiva.union([enka.pocetno])
-            break
-    
-    #odredjivanje prijelaza
-    nkaPrijelazi = {}
-    for stanje in enka.stanja:
-        for znak in enka.ulazniZnakovi:
-            if znak != '$':
-                enka.trenutnaStanja = set([stanje])
-                enka.epsilon_okruzenje()
-                #if stanje == nkaPocetno and znak == 'c':
-                    
-                enka.obavi_prijelaz(znak)
-                nkaNovaStanja = enka.trenutnaStanja
-                nkaPrijelazi[(stanje, znak)] = nkaNovaStanja
-    '''
-    print '-----------NKA----------'
-    print 'STANJA'
-    for stanje in nkaStanja:
-        print stanje
-    print '------ULAZNI ZNAKOVI-----'
-    print nkaUlazniZnakovi
-    print 'PRIJELAZI'
-    for key in sorted(nkaPrijelazi.keys()):
-        print key, '  --->   ', nkaPrijelazi[key]
-    '''
-    #pretvaranje nka u dka
-    dkaPocetno = list(nkaPocetno)
-    dkaStanja = []
-    dkaPrijelazi = {}
-    skupNeobradjenihStanja = []
-    dkaPrihvatljiva = set()
-    imeStanja = 0
-    dkaStavke = dkaPocetno
-    pomocnaStanja = []
-    while(1):
-        dkaStanja.append(dkaStavke)
-        pomocnaStanja.append([imeStanja, dkaStavke])
-        for stavka in dkaStavke:
-            if stavka in nkaPrihvatljiva:
-                dkaPrihvatljiva.add(tuple(dkaStavke))
-                break
-        for znak in nkaUlazniZnakovi:
-            dkaNoveStavke = []
-            for stavka in dkaStavke:
-                for stavka1 in nkaPrijelazi[(stavka, znak)]:
-                    if stavka1 not in dkaNoveStavke:
-                        dkaNoveStavke.append(stavka1)
-                if dkaNoveStavke not in skupNeobradjenihStanja and dkaNoveStavke not in dkaStanja and dkaNoveStavke != []:
-                    skupNeobradjenihStanja.append(dkaNoveStavke)
-            if dkaNoveStavke != []:
-                dkaPrijelazi[(tuple(dkaStavke), znak)] = dkaNoveStavke
-        if skupNeobradjenihStanja == []:
-            break
-        else:
-            skupNeobradjenihStanja.reverse()
-            dkaStavke = skupNeobradjenihStanja.pop()
-            skupNeobradjenihStanja.reverse()
-            imeStanja += 1
-    #sredjivanje dka podataka
-    dkaStanja = pomocnaStanja
-    pomocnaPrihvatljiva = list(dkaPrihvatljiva)
-    dkaPrihvatljiva = []
+def postoji_nekompletno(dkaStanja):
     for stanje in dkaStanja:
-        if dkaPocetno == stanje[1]:
-            dkaPocetno = stanje[0]
-        for prihStanje in pomocnaPrihvatljiva:
-            if list(prihStanje) == stanje[1]:
-                dkaPrihvatljiva.append(stanje[0])
-    pomocniPrijelazi = dict(dkaPrijelazi)
+        if stanje[1] == 1:
+            return 1
+    return 0
+    
+def pretvoriuDka(enka):
+    dkaUlazniZnakovi = enka.ulazniZnakovi
+    dkaUlazniZnakovi.remove('$') #ili ne????????????
+    enka.trenutnaStanja = set([enka.pocetno])
+    enka.epsilon_okruzenje()
+    dkaStanja = [[enka.trenutnaStanja, 1]] #[[set([stavke]), oznaka nekompletnosti]]
+    indexTrenStanja = 0
     dkaPrijelazi = {}
-    for key in pomocniPrijelazi.keys():
-        stavke = list(key[0])
-        noveStavke = pomocniPrijelazi[key]
-        for stanjeDka in dkaStanja:
-            if stavke == stanjeDka[1]:
-                stanje = stanjeDka[0]
-            if noveStavke == stanjeDka[1]:
-                novoStanje = stanjeDka[0]
-        dkaPrijelazi[(stanje, key[1])] = novoStanje
-    dkaUlazniZnakovi = nkaUlazniZnakovi
+    while(postoji_nekompletno(dkaStanja)):
+        dkaStanja[indexTrenStanja][1] = 0 #nekompletno = 0, tj. stanje je kompletno
+        trenutneStavke = dkaStanja[indexTrenStanja][0]
+        for znak in dkaUlazniZnakovi:
+            enka.trenutnaStanja = trenutneStavke
+            enka.obavi_prijelaz(znak)
+            noveDkaStavke = enka.trenutnaStanja
+            if noveDkaStavke != set([]):
+                if noveDkaStavke not in [dkaStanje[0] for dkaStanje in dkaStanja]:
+                    dkaStanja.append([noveDkaStavke, 1]) #dodaj U kao nekompletno stanje
+                #izracunaj index novog stanja u listi
+                for stanje in dkaStanja:
+                    if stanje[0] == noveDkaStavke:
+                        indexNovogStanja = dkaStanja.index(stanje)
+                dkaPrijelazi[(indexTrenStanja, znak)] = indexNovogStanja # stanje je novo u kontekstu ove iteracije kroz while petlju
+                
+        indexTrenStanja += 1
     
-    
+    #srediti stanja na format koji koristi napraviLRtablice
+    for stanje in dkaStanja:
+        dkaStanja[dkaStanja.index(stanje)] = [dkaStanja.index(stanje), list(stanje[0])]
     '''
     print '-----------DKA----------'
     print '-----STANJA-----'
     for stanje in dkaStanja:
         print stanje
     print '-----POCETNO-----'
-    print dkaPocetno
+    print dkaStanja[0][0]
     print '-----PRIJELAZI-----'
     for key in sorted(dkaPrijelazi.keys()):
         print key, '   ---->   ', dkaPrijelazi[key]
-    dkaUlazniZnakovi = nkaUlazniZnakovi
     print '\n\n'
     '''
     return [dkaStanja, dkaPrijelazi, dkaUlazniZnakovi]
