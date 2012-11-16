@@ -257,8 +257,8 @@ class LRParser:
     elif isinstance (cvor, Cvor):
       roditelj = cvor.nezavrsni
       djeca = cvor.djeca
+      output.write (' ' * razina + str(roditelj) + '\n')
       for dijete in djeca:
-        output.write (' ' * razina + str(roditelj) + '\n')
 
         self.ispis_stabla (dijete, razina + 1)
     
