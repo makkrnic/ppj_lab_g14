@@ -85,17 +85,7 @@ def izradiLRtablicu(dkaStanja, dkaPrijelazi, dkaUlazniZnakovi, zavrsniZnakovi, n
     
     #ppj knjiga 151.str 5)
     #svi ostali elementi tablice su Odbaci()
-    #unosenje Odbaci u tablicu Akcija
-    for stanje in [stanjeDka[0] for stanjeDka in dkaStanja]:
-        for znak in zavrsniZnakovi + [oznakaKrajaNiza]:
-            if (stanje, znak) not in Akcija.keys():
-                Akcija[(stanje, znak)] = 'Odbaci()'
-    #unosenje Odbaci u tablicu NovoStanje
-    for stanje in [stanjeDka[0] for stanjeDka in dkaStanja]:
-        for znak in nezavrsniZnakovi:
-            if (stanje, znak) not in NovoStanje.keys():
-                NovoStanje[(stanje, znak)] = 'Odbaci()'
-    
+
     #ppj knjiga 151.str 6) - nesto??????????????
     '''
     print '---------Akcija--------'
