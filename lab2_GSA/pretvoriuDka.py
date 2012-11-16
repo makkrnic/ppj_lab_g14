@@ -1,12 +1,6 @@
 #pretvanjanje enka u dka
 #izbaciti djelove za prihvatljiva stanja
 
-def postoji_nekompletno(dkaStanja):
-    for stanje in dkaStanja:
-        if stanje[1] == 1:
-            return 1
-    return 0
-    
 def pretvoriuDka(enka):
     dkaUlazniZnakovi = enka.ulazniZnakovi
     dkaUlazniZnakovi.remove('$') #ili ne????????????
@@ -15,7 +9,7 @@ def pretvoriuDka(enka):
     dkaStanja = [[enka.trenutnaStanja, 1]] #[[set([stavke]), oznaka nekompletnosti]]
     indexTrenStanja = 0
     dkaPrijelazi = {}
-    while(postoji_nekompletno(dkaStanja)):
+    while(1):
         dkaStanja[indexTrenStanja][1] = 0 #nekompletno = 0, tj. stanje je kompletno
         trenutneStavke = dkaStanja[indexTrenStanja][0]
         for znak in dkaUlazniZnakovi:
@@ -32,6 +26,8 @@ def pretvoriuDka(enka):
                 dkaPrijelazi[(indexTrenStanja, znak)] = indexNovogStanja # stanje je novo u kontekstu ove iteracije kroz while petlju
                 
         indexTrenStanja += 1
+        if indexTrenStanja == len(dkaStanja):
+            break
     
     #srediti stanja na format koji koristi napraviLRtablice
     for stanje in dkaStanja:
