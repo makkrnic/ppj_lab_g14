@@ -117,12 +117,13 @@ class LRParser:
   def kraj_niza (self):
     return len (self.niz) < self.index_niza + 1
 
-  def procitaj (self):
+  def procitaj (self, pomakni_index = True):
     if self.kraj_niza() == True:
       return False
 
     char = self.niz[self.index_niza]
-    self.index_niza += 1
+    if pomakni_index:
+      self.index_niza += 1
     return char
   
   def pomakni (self, ljedinka, stanje):
@@ -179,6 +180,8 @@ class LRParser:
     print 'prihvacam'
 
   def odbaci (self):
+    #self.stog.pop()
+    #self.ispis_stabla(self.stog.pop(), 0)
     print 'ne prihvacam'
 
   def analiziraj (self):
@@ -221,18 +224,23 @@ class LRParser:
 
       elif akcija.find ('Odbaci') != -1:
         self.odbaci()
+        #print 'Stog1: ', self.stog.stog
         self.ispisi_gresku(ulaz, trenutno_stanje)
+        
         oporavak_uspio = self.oporavi()
-        print 'Oporavak: ', oporavak_uspio
+        #print 'Oporavak: ', oporavak_uspio
+        #self.
         if not oporavak_uspio:
           break
 
       # if self.kraj_niza():
       #   break
-        
-        
-      #print "stog2:" + str(self.stog.stog) +'\n\n'
-        # oporavak TODO
+      
+    #print 'ispis stabla: '
+    self.stog.pop()
+    self.ispis_stabla(self.stog.vrh(), 0)
+    #print "stog2:" + str(self.stog.stog) +'\n\n'
+      # oporavak TODO
 
   def ispisi_gresku (self, znak, stanje):
     print "Neocekivani znak: ", znak.unznak, ' u liniji ', znak.linija, '. Ocekuje se: '
@@ -268,21 +276,44 @@ class LRParser:
     
 
   def oporavi (self):
-    znak = self.procitaj()
-    #print self.sinkro
+    #self.stog.pop()
+    #print 'Stog: ', self.stog.stog
+    #self.procitaj()
+    znak = self.procitaj(False)
+    #print 'znak: ', znak
+    #print 'Sinkronizacijski znakovi: ', self.sinkro
     while znak != False:
       #print vars(znak)
       if znak.unznak in self.sinkro:
         break
       znak = self.procitaj()
 
-    stanje = self.stog.vrh()
-    for (s,z) in self.akcije:
-      if s == stanje and z == znak:
-        return True
-      else:
-        self.stog.pop()
+    #print "Znak: ", znak
+    if znak == False:
+      return False
+    #raw_input()
+    #self.stog.pop()
+    while not self.stog.prazan():
+      stanje = self.stog.vrh()
+      #print 'Stanje ', stanje
+      #raw_input()
+      for (s,z) in self.akcije:
+        #if s == stanje or z == znak.unznak:
+        #  print "Stanje i znak: ", (s,z)
+        #  print 'Trazeno stanje i znak: ', (stanje, znak.unznak)
+        #print "Stog; ", self.stog.stog
+        if s == stanje and z == znak.unznak:
+          print 'Oporavak uspio'
+          return True
+        #else:
+        #  #raw_input()
+        #  #self.stog.pop() # odbaci stanje s vrha
+        #  self.stog.pop() # odbaci leksicku jedinku/cvor
+      self.stog.pop()
+      self.stog.pop()
 
+
+    print "oporavak nije uspio"
     return False
 
 
