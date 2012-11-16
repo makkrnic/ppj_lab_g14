@@ -173,6 +173,7 @@ class LRParser:
     self.stog.push (novoStanje)
   
   def prihvati (self):
+    #print 'Stog: ', self.stog.stog
     self.stog.pop()
     self.ispis_stabla (self.stog.pop(), 0)
     print 'prihvacam'
@@ -250,6 +251,7 @@ class LRParser:
     print ''
 
   def ispis_stabla(self, cvor, razina):
+    #print 'Cvor: ', cvor
     output = sys.stdout
     if isinstance (cvor, LeksickaJedinka):
       output.write (' ' * razina + str(cvor) + '\n')
@@ -261,6 +263,8 @@ class LRParser:
       for dijete in djeca:
 
         self.ispis_stabla (dijete, razina + 1)
+    elif isinstance (cvor, str):
+      output.write (' ' * razina + cvor + '\n')
     
 
   def oporavi (self):
