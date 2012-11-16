@@ -1,11 +1,13 @@
 #generator leksickog analizatora
-#citanje ulaza
+import pseudokod
 import sys
 
-ulaz = open(r'C:\Users\Niko\Desktop\Faks\5. semestar\PPJ\lab1\minusLang.txt','r')
-ulaznaDatoteka = ulaz.readlines()
-#ulaznaDatoteka = sys.stdin.readlines()
-ulaz.close()
+#citanje ulaza
+#ulaz = open(r'C:\Users\Niko\Desktop\Faks\5. semestar\PPJ\lab1\minusLang.txt','r')
+#ulaznaDatoteka = ulaz.readlines()
+#ulaz.close()
+ulaznaDatoteka = sys.stdin.readlines()
+
 
 #ucitavanje regularnih definicija (do prvog znaka %) 
 regDef=[]
@@ -45,29 +47,25 @@ redak = ulaznaDatoteka[i]
 print listaStanjaLA   #print za provjeru
 print listaLeksJedinki'''
 
-tablicaPrijelaza = open(r'C:\Users\Niko\Desktop\Faks\5. semestar\PPJ\lab1\tablicaPrijelaza.txt','w')
+tablicaPrijelaza = open(r'analizator/tablicaPrijelaza.txt','w')
 while (1):
     stanje = redak [1:redak.find('>')]
     regIzraz = redak[redak.find('>')+1:-1]
     for imeRegDefPom in listaReferenci: #rjesavanje referenci u pravilima
-        regIzraz = regIzraz.replace(imeRegDefPom, "{" + rjecnikRegIzraza[imeRegDefPom] + "}")
-        regIzraz = '(' + regIzraz
-        i = 0
-        while True:
-          if i >= len (regIzraz)
-            break
-
-          if regIzraz[i] == '{' and regIzraz[i-1] != '\\':
-            
-    automatInfo = re2enka(regIzraz, stanje)  #automatInfo je tipa [[stanja],pocStanje, prihStanje,{(stanje,znak):[stanja]}]
-    #zapisujemo automate u datoteku za LA
-    tablicaPrijelaza.write(' '.join().automatInfo[0] + '\n')    #prvo stanja 
-    tablicaPrijelaza.write(automatInfo[1] + '\n')               #onda pocetno stanje
-    tablicaPrijelaza.write(automatInfo[2] + '\n')               #onda prihvatljivo stanje
-    for kljuc in automatInfo[3].keys():
-        tablicaPrijelaza.write(kljuc[0] + ' ' + kljuc[1] + ' ' + ' '.join(automatInfo[3][kljuc]) + '\n')    #prijelazi u obliku: stanje znak s1 s2...
+        regIzraz = regIzraz.replace(imeRegDefPom, "(" + rjecnikRegIzraza[imeRegDefPom] + ")")
     
-    tablicaPrijelaza.write('***Slijede akcije***\n')
+    auto = pseudokod.Automat()   #stvaram objekt automat
+    automatInfo = pseudokod.pretvori(regIzraz, auto)    #radim automat iz regIzraza
+    pseudokod.dodaj_epsilon_prijelaz(auto, stanje, automatInfo[0])
+    
+    #zapisujemo automate u datoteku za LA
+    tablicaPrijelaza.write(str(stanje) + '\n')               #pocetno stanje
+    tablicaPrijelaza.write(str(automatInfo[1]) + '\n')       #onda prihvatljivo stanje
+    
+    for kljuc in auto.prijelazi.keys():
+        tablicaPrijelaza.write(str(kljuc[0]) + ' ' + str(kljuc[1]) + ' ' + ' '.join([str(stanje) for stanje in auto.prijelazi[kljuc]]) + '\n')    #prijelazi u obliku: stanje znak s1 s2...
+
+    tablicaPrijelaza.write('***Slijede_akcije***\n')
     i += 2 #preskacemo "{"
     redak = ulaznaDatoteka[i]
     #pisemo akcije u tablicu u obliku python koda
@@ -83,28 +81,29 @@ while (1):
     while(redak[0] != '}'):  
         #akcija VRATI SE
         if redak[:-1].split(' ')[0] == 'VRATI_SE':
-            tablicaPrijelaza.write('rbrZnak = rbrZnak - len(niz) + ' + redak[:-1].split(' ')[1] + '\n')
-            tablicaPrijelaza.write('niz = niz[0:' + redak[:-1].split(' ')[1] + ']\n')
+            tablicaPrijelaza.write('rbrZnak - len(niz) + ' + redak[:-1].split(' ')[1] + '\n')
+            tablicaPrijelaza.write('niz[0:' + redak[:-1].split(' ')[1] + ']\n')
         #akcija NOVI REDAK       
         elif redak[:-1] == 'NOVI_REDAK':           
-            tablicaPrijelaza.write('brRedak += 1\n')
+            tablicaPrijelaza.write('brRedak + 1\n')
             noviRedak = 1
         #akcija UDJI U STANJE
         elif redak[:-1].split(' ')[0] == 'UDJI_U_STANJE':
-            tablicaPrijelaza.write('trenutnoStanje = ' + redak[:-1].split(' ')[1] + '\n')
+            tablicaPrijelaza.write('"' + redak[:-1].split(' ')[1] + '"\n')
         
         i += 1
         redak = ulaznaDatoteka[i] 
     if znakPostoji == 1:    
         if noviRedak == 0:  #ako nije bilo novog retka
-            tablicaPrijelaza.write('tablicaIzlaza.append([' + uniformniZnak + ', str(brRedak), niz])\n')
+            tablicaPrijelaza.write('tablicaIzlaza.append(["' + uniformniZnak + '", str(brRedak), "".join(niz[0:finalniAutomat.brojIteracija])])\n')
         else:    #ako je bilo novog retka, treba smanjit broj redaka za 1
-            tablicaPrijelaza.write('tablicaIzlaza.append([' + uniformniZnak + ', str(brRedak-1), niz])\n')
-    tablicaPrijelaza.write('***Kraj akcija***\n')
+            tablicaPrijelaza.write('tablicaIzlaza.append(["' + uniformniZnak + '", str(brRedak-1), "".join(niz[0:finalniAutomat.brojIteracija])])\n')
+    tablicaPrijelaza.write('***Kraj_akcija***\n')
     
     if i == len(ulaznaDatoteka)-1:
         break
     i += 1
     redak = ulaznaDatoteka[i]
-    
+#stavimo i listu svih stanja u datoteku    
+tablicaPrijelaza.write('***Kraj_automata***\n')
 tablicaPrijelaza.write(' '.join(listaStanjaLA) + '\n')
