@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 import sys
 
 class Stog:
@@ -46,7 +47,7 @@ class LeksickaJedinka:
     self.lexjed = leksicka_jedinka
 
   def __str__ (self):
-    return self.unznak + ' ' + self.linija + ' ' + self.lexjed
+    return self.unznak + ' ' + str(self.linija) + ' ' + self.lexjed
 
 
 class LRParser:
@@ -63,6 +64,7 @@ class LRParser:
     #self.akcije = akcije
     
     self.ucitaj_sinkro (sinkro_path)
+    self.niz_odbijen = None
 
   def ucitaj_kod (self, kod):
     kod = kod.replace ('\r', '').split('\n')
@@ -119,7 +121,7 @@ class LRParser:
 
   def procitaj (self, pomakni_index = True):
     if self.kraj_niza() == True:
-      return False
+      return LeksickaJedinka ('%', 0, '%') 
 
     char = self.niz[self.index_niza]
     if pomakni_index:
@@ -163,8 +165,8 @@ class LRParser:
     cvor = Cvor (lijevo, djeca)
     #print "Cvor: " + str(cvor.nezavrsni) + ' -> ' + str (cvor.djeca)
     self.stog.push (cvor)
-    #print "stog0: " + str(self.stog.stog)
-    #print 'djeca: ' + str(djeca) 
+    # print "stog0: " + str(self.stog.stog)
+    # print 'djeca: ' + str(djeca) 
     novoStanje_raw = self.novaStanja[(self.stog.dohvati (2), cvor.nezavrsni)]
     if novoStanje_raw.find("Stavi") != -1:
       novoStanje = novoStanje_raw[7:-2]
@@ -172,6 +174,9 @@ class LRParser:
       self.odbaci ()
 
     self.stog.push (novoStanje)
+
+  def niz_prihvacen (self):
+    return self.niz_odbijen != True
   
   def prihvati (self):
     #print 'Stog: ', self.stog.stog
@@ -180,13 +185,13 @@ class LRParser:
     if self.niz_odbijen == True:
       self.odbaci()
       return
-    print 'prihvacam'
+    #print 'prihvacam'
 
   def odbaci (self):
     #self.stog.pop()
     #self.ispis_stabla(self.stog.pop(), 0)
     self.niz_odbijen = True
-    print 'ne prihvacam'
+    #print 'ne prihvacam'
 
   def analiziraj (self):
     #for el in self.niz:
@@ -195,27 +200,28 @@ class LRParser:
 
     #raw_input ()
     while True:
+      #raw_input()
       if self.index_niza +1 > len(self.niz):
         ulaz = LeksickaJedinka ('%', 0, '%')
       else:
         ulaz = self.niz[self.index_niza]
       ulaz_char = ulaz.unznak
       
-#      self.linija = 0
-#      if ulaz_char == '\n':
-#        self.linija += 1
-      
       trenutno_stanje = self.stog.vrh()
 
       akcija = self.akcije.get((trenutno_stanje, ulaz_char), 'Odbaci')
-      #print "znak:" + ulaz_char
+      #print ''
+      #print 'Na indeksu ', str(self.index_niza)
+      #print "znak:", vars(ulaz)
       #print "trenutno stanje:" + str(trenutno_stanje)
       #print "akcija:" + str(akcija)
       #print "stog:" + str(self.stog.stog), '\n'
-
+      #print ''
+      
+      #raw_input()
       if akcija.find ('Reduciraj') != -1:
         prod = eval (akcija[10:-1])
-        #print "Produkcija: " , prod
+       # print "Produkcija: " , prod
         prod = prod.split('->')
         produkcija = Produkcija (prod[0].strip(), prod[1].strip().split(' '))
         self.reduciraj (produkcija)
@@ -235,12 +241,14 @@ class LRParser:
         #print 'Oporavak: ', oporavak_uspio
         #self.
         if not oporavak_uspio:
+          # print "end loop"
           break
-
+      
+      # print "Kraj? ", self.kraj_niza()
       # if self.kraj_niza():
       #   break
       
-    #print 'ispis stabla: '
+    #print '\n\nispis stabla: '
     self.stog.pop()
     self.ispis_stabla(self.stog.vrh(), 0)
     #print "stog2:" + str(self.stog.stog) +'\n\n'
@@ -252,9 +260,12 @@ class LRParser:
     for k in self.akcije:
       #print self.akcije[k]
       (s, z) = k
-      akcija = self.akcije.get (k, False)
-      if akcija != False and akcija[0] != 'O':
-        #print 'Dodajem ', z
+      akcija = self.akcije.get (k, 'Odbaci')
+      if s == stanje and akcija != False and akcija[0] != 'O':
+        # print 'Kljuc: ', k
+        # print "Akcija: ", akcija
+        # print 'Dodajem ', z
+        # raw_input()
         okZnakovi.add(z)
     
     for z in okZnakovi:
@@ -281,19 +292,24 @@ class LRParser:
 
   def oporavi (self):
     #self.stog.pop()
-    #print 'Stog: ', self.stog.stog
+    #print '\nU Oporavi() Stog: ', self.stog.stog
     #self.procitaj()
     znak = self.procitaj(False)
-    #print 'znak: ', znak
-    #print 'Sinkronizacijski znakovi: ', self.sinkro
-    while znak != False:
-      #print vars(znak)
+    # print 'U Oporavi() znak: ', znak
+    # print 'Sinkronizacijski znakovi: ', self.sinkro
+    while znak.unznak != '%':
+      # print 'Preskacem ', vars(znak)
+      # print 'na indeksu', str(self.index_niza)
       if znak.unznak in self.sinkro:
+        # print 'gotovo preskakanje'
         break
-      znak = self.procitaj()
+      self.index_niza += 1
+      znak = self.procitaj(False)
 
-    #print "Znak: ", znak
+    # print "Znak: ", vars(znak)
+    # print 'na indeksu: ', str(self.index_niza)
     if znak == False:
+      # print 'nema znaka!!!!!'
       return False
     #raw_input()
     #self.stog.pop()
@@ -307,7 +323,8 @@ class LRParser:
         #  print 'Trazeno stanje i znak: ', (stanje, znak.unznak)
         #print "Stog; ", self.stog.stog
         if s == stanje and z == znak.unznak:
-          print 'Oporavak uspio'
+          #print 'Oporavak uspio'
+          # print '\n\n\nIzlazim iz oporavi(). znak: ', vars(self.niz[self.index_niza]), 'Index: ', self.index_niza
           return True
         #else:
         #  #raw_input()
@@ -317,7 +334,7 @@ class LRParser:
       self.stog.pop()
 
 
-    print "oporavak nije uspio"
+    #print "oporavak nije uspio"
     return False
 
 
@@ -327,3 +344,7 @@ if __name__ == '__main__':
   ulazni_kod = open('../ulazlink').read()
   parser = LRParser (ulazni_kod, 'tabliceLRparsera.txt', 'sinkronizacijskiZnakovi')
   parser.analiziraj()
+  if parser.niz_prihvacen():
+    sys.exit (0)
+  else:
+    sys.exit (1)
