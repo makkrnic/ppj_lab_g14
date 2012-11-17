@@ -29,9 +29,6 @@ def pretvoriuDka(enka):
         if indexTrenStanja == len(dkaStanja):
             break
     
-    #srediti stanja na format koji koristi napraviLRtablice
-    for stanje in dkaStanja:
-        dkaStanja[dkaStanja.index(stanje)] = [dkaStanja.index(stanje), list(stanje[0])]
     '''
     print '-----------DKA----------'
     print '-----STANJA-----'
