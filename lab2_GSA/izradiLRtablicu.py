@@ -6,20 +6,16 @@ def izradiLRtablicu(dkaStanja, dkaPrijelazi, dkaUlazniZnakovi, zavrsniZnakovi, n
     oznakaKrajaNiza = '%'
     #print dkaStanja
     for stanjeZnak in dkaPrijelazi.keys():
-        stanje = stanjeZnak[0]
-        for stanjeDka in dkaStanja:
-            if stanjeDka[0] == stanje:
-                stavke = stanjeDka[1]
         znak = stanjeZnak[1]
         if znak in nezavrsniZnakovi:    #tablica NovoStanje
             #ppj knjiga 151.str 4.a)
-            NovoStanje[(stanje, znak)] = 'Stavi(' + str(dkaPrijelazi[stanjeZnak]) + ')'
+            NovoStanje[(stanjeZnak[0], znak)] = 'Stavi(' + str(dkaPrijelazi[stanjeZnak]) + ')'
     
     #tablica Akcija
     #print dkaStanja
     for stanjeDka in dkaStanja:
-        for stavka in stanjeDka[1]:
-            stanje = stanjeDka[0]
+        for stavka in stanjeDka[0]:
+            stanje = dkaStanja.index(stanjeDka)
             stavka = stavka.split('->')
             lijevaStrana = stavka[0]    #nezavrsni znak na lijevoj strani produkcije
             desno = stavka[1].split(' ')
@@ -29,17 +25,7 @@ def izradiLRtablicu(dkaStanja, dkaPrijelazi, dkaUlazniZnakovi, zavrsniZnakovi, n
             #print desnaStrana, okoTocke
             lijevoOdTocke = okoTocke[0][:-1].split('|')
             desnoOdTocke = okoTocke[1][1:].split('|')
-            '''
-            print lijevaStrana
-            print desnaStrana
-            print lijevoOdTocke
-            print desnoOdTocke
-            print viticastiZnakovi
-            '''
-            #print stanje, desnoOdTocke
-            #print viticastiZnakovi, [oznakaKrajaNiza], len(desnoOdTocke)
-            #ppj knjiga 151.str 3.a)
-            #print lijevaStrana, pocetniNezavrsniZnak, lijevoOdTocke[0], nezavrsniZnakovi[0], viticastiZnakovi, [oznakaKrajaNiza]
+            
             if desnoOdTocke != ['']:
                 znakStavke = desnoOdTocke[0]
                 if znakStavke in zavrsniZnakovi:
@@ -59,24 +45,16 @@ def izradiLRtablicu(dkaStanja, dkaPrijelazi, dkaUlazniZnakovi, zavrsniZnakovi, n
                         
                         if Akcija[stanje, viticastiZnak][0] == 'R': #ako vec postoji akcija reduciraj
                             #nadjiPoziciju trenutneProdukcije u ulaznoj datoteci
-                            rbrTrenutneProdukcije = 0
-                            for produkcija in produkcije: #[[lijevastranaProd, [desnastranaProd]]]
-                                if trenutnaProdukcija == produkcija:
-                                    break
-                                else:
-                                    rbrTrenutneProdukcije += 1
+                            rbrTrenutneProdukcije = produkcije.index(trenutnaProdukcija)
+                            
                             #nadjiPoziciju vecZapisaneProdukcije u ulaznoj datoteci
-                            rbrStareProdukcije = 0
-                            lijevaStranaStareP = Akcija[(stanje, viticastiZnak)].split(' ')[0]
-                            desnaStranaStareP = Akcija[(stanje, viticastiZnak)].split(' ')[2:]
+                            lijevaStranaStareP = Akcija[(stanje, viticastiZnak)][10:(Akcija[(stanje, viticastiZnak)].index('>') + 1)]
+                            desnaStranaStareP = Akcija[(stanje, viticastiZnak)][:-1].split(' ')[2:]
                             staraProdukcija = [lijevaStranaStareP, desnaStranaStareP]
-                            for produkcija in produkcije: #[[lijevastranaProd, [desnastranaProd]]]
-                                if staraProdukcija == produkcija:
-                                    break
-                                else:
-                                    rbrStareProdukcije += 1
-                            if rbrTrenutneProdukcije > rbrStareProdukcije:
+                            rbrStareProdukcije = produkcije.index(staraProdukcija)
+                            if rbrTrenutneProdukcije < rbrStareProdukcije:
                                 zapisiuTablicu = 1
+                                
                     if zapisiuTablicu == 1:
                         desnaStranaProdukcije = ' '.join(lijevoOdTocke)
                         if desnaStranaProdukcije == '':
@@ -86,7 +64,7 @@ def izradiLRtablicu(dkaStanja, dkaPrijelazi, dkaUlazniZnakovi, zavrsniZnakovi, n
     #ppj knjiga 151.str 5)
     #svi ostali elementi tablice su Odbaci()
 
-    #ppj knjiga 151.str 6) - nesto??????????????
+    #ppj knjiga 151.str 6) - nesto?
     '''
     print '---------Akcija--------'
     for key in sorted(Akcija.keys()):
