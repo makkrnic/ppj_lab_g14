@@ -63,6 +63,7 @@ class LRParser:
     #self.akcije = akcije
     
     self.ucitaj_sinkro (sinkro_path)
+    self.niz_odbijen = None
 
   def ucitaj_kod (self, kod):
     kod = kod.replace ('\r', '').split('\n')
