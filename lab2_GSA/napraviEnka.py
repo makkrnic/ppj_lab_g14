@@ -26,14 +26,13 @@ class Automat:
             self.prijelazi[(st1,znak)].append(st2)
         else:
             self.prijelazi[(st1,znak)] = [st2]
-
+      
 
 def napraviEnka(produkcije, nezavrsniZnakovi, zavrsniZnakovi, pocetniZnak):
     #napravi zapocinje skupove za svaki znak i svaki sufiks desne strane svake produkcije
     listaPraznih = racunaZapocinje.prazniZnakovi(produkcije) #lista praznih znakova
     zapocinje = racunaZapocinje.zapocinjeZaZnakove(produkcije, nezavrsniZnakovi, zavrsniZnakovi, pocetniZnak) #zapocinje[znak] = [znakovi]
     zapocinjeSufiks = racunaZapocinje.zapocinjeZaSufikse(produkcije, zapocinje) #zapocinjeSufiks[sufiks] =  [znakovi]
-    
     #stvaranje eNKA
     enka = Automat(pocetniZnak)
     
@@ -117,8 +116,9 @@ def napraviEnka(produkcije, nezavrsniZnakovi, zavrsniZnakovi, pocetniZnak):
     enka.pocetnoStanje = pocetnoStr  
     enka.svaStanja = svaStanjaStr
     enka.prijelazi = prijelaziStr
+    denisEnka = Enka(enka.svaStanja, nezavrsniZnakovi + zavrsniZnakovi + ['$'],enka.pocetnoStanje, enka.svaStanja, enka.prijelazi)
     
-    denisEnka = Enka(enka.svaStanja, nezavrsniZnakovi + zavrsniZnakovi + ['$'],enka.pocetnoStanje, enka.svaStanja, enka.prijelazi) 
+            
     '''
     print '---------ENKA---------'
     print 'POCETNO STANJE'
@@ -133,4 +133,5 @@ def napraviEnka(produkcije, nezavrsniZnakovi, zavrsniZnakovi, pocetniZnak):
         print kljuc, '  ->  ', enka.prijelazi[kljuc]
     print '\n\n'
     '''
+    
     return denisEnka
