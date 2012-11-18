@@ -341,7 +341,9 @@ class LRParser:
 
 
 if __name__ == '__main__':
-  ulazni_kod = open('../ulazlink').read()
+  #ulazni_kod = open('../ulazlink').read()
+  
+  ulazni_kod = sys.stdin.read()
   parser = LRParser (ulazni_kod, 'tabliceLRparsera.txt', 'sinkronizacijskiZnakovi')
   parser.analiziraj()
   if parser.niz_prihvacen():
