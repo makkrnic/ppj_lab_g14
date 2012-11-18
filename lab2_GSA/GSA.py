@@ -7,7 +7,7 @@ from izradiLRtablicu import izradiLRtablicu
 
 #ucitavanje ulazne datoteke
 #ulaz = [redak[:-1] for redak in sys.stdin.readlines()]
-ulaznaDatoteka = open(r"gramatikalink", 'r')
+ulaznaDatoteka = open(r"test.san", 'r')
 ulaz = [redak[:-1] for redak in ulaznaDatoteka.readlines()]
 ulaznaDatoteka.close()
 
@@ -34,6 +34,7 @@ print zavrsniZnakovi
 print sinkronizacijskiZnakovi
 print produkcije
 '''
+
 enka = napraviEnka(produkcije, nezavrsniZnakovi, zavrsniZnakovi, pocetniZnak)
 dka = pretvoriuDka(enka)
 tablice = izradiLRtablicu(dka[0], dka[1], dka[2], zavrsniZnakovi, nezavrsniZnakovi, pocetniZnak, listaProdukcija)
