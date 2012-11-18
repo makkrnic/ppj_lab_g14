@@ -9,6 +9,12 @@ class Enka ():
         self.prihvatljiva = set(prihvatljiva)
         self.prijelazi = prijelazi # { (stanje, znak) : [stanje] }
         self.trenutnaStanja = set ([]).union([self.pocetno])
+        self.epsRjecnik = {}
+        
+        for stanje in self.stanja:
+            self.trenutnaStanja = set([stanje])
+            self.epsilon_okruzenje()
+            self.epsRjecnik[stanje] = list(self.trenutnaStanja)
 
     def reset (self):
         self.trenutnaStanja = set ([]).union([self.pocetno])
@@ -37,4 +43,4 @@ class Enka ():
                 continue
             nova = nova.union(novaStanja)
         self.trenutnaStanja = nova 
-        self.epsilon_okruzenje()
+        #self.epsilon_okruzenje()
