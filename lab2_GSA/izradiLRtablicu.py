@@ -12,9 +12,8 @@ def izradiLRtablicu(dkaStanja, dkaPrijelazi, dkaUlazniZnakovi, zavrsniZnakovi, n
             NovoStanje[(stanjeZnak[0], znak)] = 'Stavi(' + str(dkaPrijelazi[stanjeZnak]) + ')'
     
     #tablica Akcija
-    #print dkaStanja
     for stanjeDka in dkaStanja:
-        for stavka in stanjeDka[0]:
+        for stavka in stanjeDka:
             stanje = dkaStanja.index(stanjeDka)
             stavka = stavka.split('->')
             lijevaStrana = stavka[0]    #nezavrsni znak na lijevoj strani produkcije
@@ -22,7 +21,6 @@ def izradiLRtablicu(dkaStanja, dkaPrijelazi, dkaUlazniZnakovi, zavrsniZnakovi, n
             desnaStrana = desno[0][:-1]  #desna strana produkcije
             viticastiZnakovi = desno[1][1:-1].split(',') #skup zavrsnih znakova npr. {a1,a2,a3} se sprema u [a1,a2,a3]
             okoTocke = desnaStrana.split('.') #[<string>, <string>]
-            #print desnaStrana, okoTocke
             lijevoOdTocke = okoTocke[0][:-1].split('|')
             desnoOdTocke = okoTocke[1][1:].split('|')
             
@@ -31,7 +29,7 @@ def izradiLRtablicu(dkaStanja, dkaPrijelazi, dkaUlazniZnakovi, zavrsniZnakovi, n
                 if znakStavke in zavrsniZnakovi:
                     Akcija[(stanje, znakStavke)] = 'Pomakni(' + str(dkaPrijelazi[(stanje, znakStavke)]) + ')'
             #ppj knjiga 151.str 3.c)
-            #pripaziti na [nezavrsniZnakovi[0]]]------------!!!!!!!!!!!!!!!!!!!!--------------
+            #pripaziti na [nezavrsniZnakovi[0]]]
             elif lijevaStrana == pocetniNezavrsniZnak and lijevoOdTocke[0] == nezavrsniZnakovi[0] and viticastiZnakovi == [oznakaKrajaNiza]:
                 Akcija[(stanje, oznakaKrajaNiza)] = 'Prihvati()'
             #ppj knjiga 151.str 3.b)
@@ -64,7 +62,6 @@ def izradiLRtablicu(dkaStanja, dkaPrijelazi, dkaUlazniZnakovi, zavrsniZnakovi, n
     #ppj knjiga 151.str 5)
     #svi ostali elementi tablice su Odbaci()
 
-    #ppj knjiga 151.str 6) - nesto?
     '''
     print '---------Akcija--------'
     for key in sorted(Akcija.keys()):
